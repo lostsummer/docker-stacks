@@ -1,0 +1,44 @@
+version: "3"
+services:
+  gitlab:
+    image: sameersbn/gitlab:9.0.4
+    ports:
+      - "2222:22"
+      - "8088:80"
+    depends_on:
+      - redis
+      - postgresql
+    environment:
+      - DEBUG=false
+
+      - DB_ADAPTER=postgresql
+      - DB_HOST=postgresql
+      - DB_PORT=5432
+      - DB_USER=gitlab
+      - DB_PASS=password
+      - DB_NAME=gitlabhq_production
+
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+
+
+      - GITLAB_HOST=localhost
+      - GITLAB_PORT=80
+      - GITLAB_SSH_PORT=22
+      - GITLAB_SECRETS_DB_KEY_BASE=long-and-random-alpha-numeric-string
+      - GITLAB_SECRETS_SECRET_KEY_BASE=long-and-random-alphanumeric-string
+      - GITLAB_SECRETS_OTP_KEY_BASE=long-and-random-alphanumeric-string
+
+    restart: always
+
+  redis:
+    image: sameersbn/redis
+    restart: always
+
+  postgresql:
+    image: sameersbn/postgresql:9.6-2
+    environment:
+      - DB_NAME=gitlabhq_production
+      - DB_USER=gitlab
+      - DB_PASS=password
+      - DB_EXTENSION=pg_trgm

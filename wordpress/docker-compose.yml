@@ -1,0 +1,34 @@
+version: "3"
+services:
+  wordpress:
+    build: ./wpfile
+    image: mywordpress:fpm
+    depends_on:
+      - db
+    volumes:
+      - data-volume:/var/www/html
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+  nginx:
+    image: raulr/nginx-wordpress
+    depends_on:
+      - wordpress
+    volumes:
+      - data-volume:/var/www/html
+    ports:
+      - "3322:80"
+    environment:
+      POST_MAX_SIZE: 128m
+  db:
+    image: mariadb
+    volumes:
+      - data-volume:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: somewordpress
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
+volumes:
+  data-volume:

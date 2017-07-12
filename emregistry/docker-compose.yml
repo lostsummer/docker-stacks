@@ -1,0 +1,27 @@
+version: '3'
+services:
+  nginx:
+    image: "nginx:1.13"
+    depends_on:
+      - registry
+    ports:
+      - "443:443"
+    volumes:
+      - ./nginx:/etc/nginx/conf.d:ro
+    restart: always
+  registry:
+    environment:
+      CACHE_REDIS_HOST: redis
+      CACHE_REDIS_PORT: 6379
+      REGISTRY_STORAGE_FILESYSTEM_ROOTDIRECTORY: /data
+    image: "registry:2.6"
+    ports:
+      - 5000:5000
+    restart: always
+    depends_on:
+      - redis
+    volumes:
+      - ./data:/data
+  redis:
+    image: "redis:latest"
+    restart: always
